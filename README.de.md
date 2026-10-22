@@ -7,7 +7,7 @@ Du musst die Konfig-Syntax nicht lernen: Regler verschieben, Farben wählen und 
 
 Geschrieben in **Rust** mit [egui](https://github.com/emilk/egui). Die Oberfläche gibt es auf Deutsch, Englisch und Russisch.
 
-![Screenshot](docs/screenshot-de.png)
+![Easy Hyprland Demo](docs/demo.gif)
 
 ## Funktionen
 
@@ -25,6 +25,41 @@ Geschrieben in **Rust** mit [egui](https://github.com/emilk/egui). Die Oberfläc
 - 📄 **Fertige Konfig**: ansehen, kopieren, eigene Zeilen hinzufügen
 - 👀 **Live-Vorschau** deiner Fenster direkt in der App
 - 🛟 **Sicher**: vor Änderungen an deiner Konfig wird eine Sicherung angelegt, und nach dem Anwenden werden Konfigfehler von Hyprland angezeigt
+
+## Screenshots
+
+Die fünf eingebauten Themes in der Live-Vorschau:
+
+![Themes](docs/themes.png)
+
+Alle Bereiche der App:
+
+<table>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/de/themes.png" alt="Themes und Konfig-Format"><br><sub>Themes und Konfig-Format</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/de/windows.png" alt="Fenster: Abstände, Rahmen, Layout"><br><sub>Fenster: Abstände, Rahmen, Layout</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/de/effects.png" alt="Effekte: Transparenz, Blur, Schatten"><br><sub>Effekte: Transparenz, Blur, Schatten</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/de/animations.png" alt="Animationen"><br><sub>Animationen</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/de/input.png" alt="Eingabe: Tastatur, Maus, Touchpad"><br><sub>Eingabe: Tastatur, Maus, Touchpad</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/de/keys.png" alt="Tastenkürzel"><br><sub>Tastenkürzel</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/de/monitors.png" alt="Monitore"><br><sub>Monitore</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/de/autostart.png" alt="Autostart"><br><sub>Autostart</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/de/rules.png" alt="Fensterregeln"><br><sub>Fensterregeln</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/de/env.png" alt="Umgebungsvariablen"><br><sub>Umgebungsvariablen</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/de/wallpaper.png" alt="Hintergrund (hyprpaper)"><br><sub>Hintergrund (hyprpaper)</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/de/config.png" alt="Fertige Konfig"><br><sub>Fertige Konfig</sub></td>
+  </tr>
+</table>
 
 ## Unterstützte Hyprland-Versionen
 

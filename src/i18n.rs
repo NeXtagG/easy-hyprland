@@ -81,7 +81,7 @@ pub const STRINGS: &[(&str, &str, &str, &str)] = &[
     ("btn.delete", "Удалить", "Delete", "Löschen"),
     ("btn.copy", "📋 Скопировать", "📋 Copy", "📋 Kopieren"),
     ("btn.copied", "Скопировано", "Copied", "Kopiert"),
-    ("status.unsaved", "● есть несохранённые изменения", "● unsaved changes", "● ungespeicherte Änderungen"),
+    ("status.unsaved", "• есть несохранённые изменения", "• unsaved changes", "• ungespeicherte Änderungen"),
     ("status.saved", "Сохранено: {}", "Saved: {}", "Gespeichert: {}"),
     ("status.backup", "копия старого файла: {}", "backup of the old file: {}", "Sicherung der alten Datei: {}"),
     ("status.save_error", "Ошибка сохранения: {}", "Save failed: {}", "Speichern fehlgeschlagen: {}"),

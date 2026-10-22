@@ -423,6 +423,12 @@ impl Settings {
         self.wallpaper_enabled && !self.wallpaper.trim().is_empty()
     }
 
+    /// hyprpaper must be started once: only add it when autostart doesn't already.
+    fn needs_hyprpaper_autostart(&self) -> bool {
+        self.wallpaper_active()
+            && !self.autostart.iter().any(|c| c.split_whitespace().next().is_some_and(|p| p.rsplit('/').next() == Some("hyprpaper")))
+    }
+
     // ---------------------------------------------------------------- hyprlang
 
     fn generate_hyprlang(&self, lang: Lang) -> String {
@@ -448,7 +454,7 @@ impl Settings {
         for cmd in self.autostart.iter().filter(|c| !c.trim().is_empty()) {
             let _ = writeln!(s, "exec-once = {}", h(cmd));
         }
-        if self.wallpaper_active() {
+        if self.needs_hyprpaper_autostart() {
             s.push_str("exec-once = hyprpaper\n");
         }
         s.push('\n');
@@ -623,7 +629,7 @@ impl Settings {
             .iter()
             .filter(|c| !c.trim().is_empty())
             .map(|c| self.expand_vars(c))
-            .chain(self.wallpaper_active().then(|| "hyprpaper".to_string()))
+            .chain(self.needs_hyprpaper_autostart().then(|| "hyprpaper".to_string()))
             .collect();
         if !autostart.is_empty() {
             s.push_str("hl.on(\"hyprland.start\", function()\n");
@@ -880,6 +886,23 @@ mod tests {
             assert!(lua.contains(needle), "missing {needle}\n{lua}");
         }
         assert!(!lua.contains("$mainMod") && !lua.contains("$terminal"));
+    }
+
+    #[test]
+    fn hyprpaper_is_started_only_once() {
+        let mut s = full_settings();
+        for format in [Format::Lua, Format::Hyprlang] {
+            let count = |s: &Settings| {
+                s.generate(format, Lang::En)
+                    .lines()
+                    .filter(|l| (l.contains("exec-once") || l.contains("exec_cmd")) && l.contains("hyprpaper"))
+                    .count()
+            };
+            s.autostart = vec!["waybar".into()];
+            assert_eq!(count(&s), 1, "{format:?}: added when missing");
+            s.autostart.push("/usr/bin/hyprpaper".into());
+            assert_eq!(count(&s), 1, "{format:?}: not duplicated");
+        }
     }
 
     #[test]

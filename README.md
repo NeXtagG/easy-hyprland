@@ -7,7 +7,7 @@ You don't need to learn the config syntax: move the sliders, pick colors and pre
 
 Written in **Rust** with [egui](https://github.com/emilk/egui). The interface is available in English, Russian and German.
 
-![Screenshot](docs/screenshot-en.png)
+![Easy Hyprland demo](docs/demo.gif)
 
 ## Features
 
@@ -25,6 +25,41 @@ Written in **Rust** with [egui](https://github.com/emilk/egui). The interface is
 - 📄 **Generated config**: view, copy, add your own lines
 - 👀 **Live preview** of your windows inside the app
 - 🛟 **Safe**: a backup is made before your config is touched, and Hyprland's config errors are shown after applying
+
+## Screenshots
+
+The five built-in themes, as shown in the live preview:
+
+![Themes](docs/themes.png)
+
+Every section of the app:
+
+<table>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/en/themes.png" alt="Themes and config format"><br><sub>Themes and config format</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/en/windows.png" alt="Windows: gaps, borders, layout"><br><sub>Windows: gaps, borders, layout</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/en/effects.png" alt="Effects: opacity, blur, shadows"><br><sub>Effects: opacity, blur, shadows</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/en/animations.png" alt="Animations"><br><sub>Animations</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/en/input.png" alt="Input: keyboard, mouse, touchpad"><br><sub>Input: keyboard, mouse, touchpad</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/en/keys.png" alt="Keybinds"><br><sub>Keybinds</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/en/monitors.png" alt="Monitors"><br><sub>Monitors</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/en/autostart.png" alt="Autostart"><br><sub>Autostart</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/en/rules.png" alt="Window rules"><br><sub>Window rules</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/en/env.png" alt="Environment variables"><br><sub>Environment variables</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/en/wallpaper.png" alt="Wallpaper (hyprpaper)"><br><sub>Wallpaper (hyprpaper)</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/en/config.png" alt="Generated config"><br><sub>Generated config</sub></td>
+  </tr>
+</table>
 
 ## Supported Hyprland versions
 

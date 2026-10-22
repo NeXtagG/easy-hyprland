@@ -7,7 +7,7 @@
 
 Написано на **Rust** с [egui](https://github.com/emilk/egui). Интерфейс есть на русском, английском и немецком.
 
-![Скриншот](docs/screenshot-ru.png)
+![Демо Easy Hyprland](docs/demo.gif)
 
 ## Возможности
 
@@ -25,6 +25,41 @@
 - 📄 **Готовый конфиг**: просмотр, копирование и свои строки
 - 👀 **Живой предпросмотр** окон прямо в программе
 - 🛟 **Безопасно**: перед изменением конфига делается резервная копия, а после применения показываются ошибки конфига от Hyprland
+
+## Скриншоты
+
+Пять встроенных тем в живом предпросмотре:
+
+![Themes](docs/themes.png)
+
+Все разделы программы:
+
+<table>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/themes.png" alt="Темы и формат конфига"><br><sub>Темы и формат конфига</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/windows.png" alt="Окна: отступы, рамки, раскладка"><br><sub>Окна: отступы, рамки, раскладка</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/effects.png" alt="Эффекты: прозрачность, размытие, тени"><br><sub>Эффекты: прозрачность, размытие, тени</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/animations.png" alt="Анимации"><br><sub>Анимации</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/input.png" alt="Ввод: клавиатура, мышь, тачпад"><br><sub>Ввод: клавиатура, мышь, тачпад</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/keys.png" alt="Горячие клавиши"><br><sub>Горячие клавиши</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/monitors.png" alt="Мониторы"><br><sub>Мониторы</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/autostart.png" alt="Автозапуск"><br><sub>Автозапуск</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/rules.png" alt="Правила окон"><br><sub>Правила окон</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/env.png" alt="Переменные окружения"><br><sub>Переменные окружения</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/wallpaper.png" alt="Обои (hyprpaper)"><br><sub>Обои (hyprpaper)</sub></td>
+    <td width="50%" align="center"><img src="docs/screenshots/ru/config.png" alt="Готовый конфиг"><br><sub>Готовый конфиг</sub></td>
+  </tr>
+</table>
 
 ## Поддерживаемые версии Hyprland
 

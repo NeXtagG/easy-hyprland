@@ -731,20 +731,61 @@ fn draw_preview(p: &egui::Painter, rect: Rect, s: &Settings) {
         }
 
         if s.border_size > 0 {
-            let width = (s.border_size as f32 * scale).max(1.0);
-            let color = if active {
-                if s.border_gradient {
-                    c32(s.active_border_a).lerp_to_gamma(c32(s.active_border_b), 0.5)
-                } else {
-                    c32(s.active_border_a)
-                }
-            } else {
-                c32(s.inactive_border)
-            };
-            p.rect_stroke(w, radius, Stroke::new(width, color), StrokeKind::Inside);
+            // Borders are drawn a bit thicker than the scaled preview so their colors stay readable.
+            let width = (s.border_size as f32 * 0.9).max(1.0);
             if active && s.border_gradient {
-                p.rect_stroke(w.shrink(width), radius, Stroke::new(width * 0.6, c32(s.active_border_b).linear_multiply(0.5)), StrokeKind::Inside);
+                gradient_border(p, w, radius.nw as f32, width, c32(s.active_border_a), c32(s.active_border_b), s.border_angle as f32);
+            } else {
+                let color = if active { c32(s.active_border_a) } else { c32(s.inactive_border) };
+                p.rect_stroke(w, radius, Stroke::new(width, color), StrokeKind::Inside);
             }
         }
     }
+}
+
+/// Points along a rounded rectangle, clockwise from the top-left corner.
+/// Every call with the same `steps` returns the same number of points.
+fn rounded_rect_points(rect: Rect, radius: f32, steps: usize) -> Vec<Pos2> {
+    let r = radius.clamp(0.0, rect.width().min(rect.height()) / 2.0);
+    let corners = [
+        (Pos2::new(rect.min.x + r, rect.min.y + r), 180.0_f32),
+        (Pos2::new(rect.max.x - r, rect.min.y + r), 270.0),
+        (Pos2::new(rect.max.x - r, rect.max.y - r), 0.0),
+        (Pos2::new(rect.min.x + r, rect.max.y - r), 90.0),
+    ];
+    let mut pts = Vec::with_capacity(4 * (steps + 1));
+    for (center, start) in corners {
+        for i in 0..=steps {
+            let a = (start + 90.0 * i as f32 / steps as f32).to_radians();
+            pts.push(center + Vec2::new(a.cos(), a.sin()) * r);
+        }
+    }
+    pts
+}
+
+/// Draws a border whose color runs from `a` to `b` along `angle_deg`, like Hyprland's gradient borders.
+fn gradient_border(p: &egui::Painter, rect: Rect, radius: f32, width: f32, a: Color32, b: Color32, angle_deg: f32) {
+    const STEPS: usize = 8;
+    let outer = rounded_rect_points(rect, radius, STEPS);
+    let inner = rounded_rect_points(rect.shrink(width), (radius - width).max(0.0), STEPS);
+    // Hyprland measures the angle clockwise from "left to right".
+    let dir = Vec2::angled(angle_deg.to_radians());
+    let half = (rect.width() * dir.x.abs() + rect.height() * dir.y.abs()) / 2.0;
+    let color = |pt: Pos2| {
+        let t = ((pt - rect.center()).dot(dir) / half.max(1.0) * 0.5 + 0.5).clamp(0.0, 1.0);
+        a.lerp_to_gamma(b, t)
+    };
+    let mut mesh = egui::Mesh::default();
+    for (o, i) in outer.iter().zip(&inner) {
+        mesh.colored_vertex(*o, color(*o));
+        mesh.colored_vertex(*i, color(*i));
+    }
+    let n = outer.len() as u32;
+    for k in 0..n {
+        let (o0, i0) = (2 * k, 2 * k + 1);
+        let (o1, i1) = (2 * ((k + 1) % n), 2 * ((k + 1) % n) + 1);
+        mesh.add_triangle(o0, i0, o1);
+        mesh.add_triangle(i0, i1, o1);
+    }
+    p.add(mesh);
 }

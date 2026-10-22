@@ -1,41 +1,53 @@
+**English** · [Русский](README.ru.md) · [Deutsch](README.de.md)
+
 # Easy Hyprland
 
-Программа для простой настройки [Hyprland](https://hyprland.org) с понятным графическим интерфейсом.
-Вам не нужно разбираться в синтаксисе конфигов: двигайте ползунки, выбирайте цвета и нажмите «Сохранить и применить».
+An easy, good-looking GUI for configuring [Hyprland](https://hyprland.org).
+You don't need to learn the config syntax: move the sliders, pick colors and press **Save and apply**.
 
-Написано на **Rust** с [egui](https://github.com/emilk/egui).
+Written in **Rust** with [egui](https://github.com/emilk/egui). The interface is available in English, Russian and German.
 
-![Скриншот](docs/screenshot.png)
+![Screenshot](docs/screenshot-en.png)
 
-## Возможности
+## Features
 
-- 🎨 **Темы**: Catppuccin, Nord, Gruvbox, Неон, Минимализм в один клик
-- 🪟 **Окна**: отступы, рамки, градиент рамки, скругление, раскладка dwindle/master
-- ✨ **Эффекты**: прозрачность, размытие (blur), тени, затемнение неактивных окон
-- 🎞 **Анимации**: включение, скорость, стиль (плавный, быстрый, пружинистый)
-- ⌨ **Ввод**: раскладки и их переключение, чувствительность мыши, тачпад
-- 🔑 **Горячие клавиши**: программы по умолчанию и редактор сочетаний клавиш
-- 🖥 **Мониторы**: разрешение, частота, позиция, масштаб
-- 🚀 **Автозапуск**: `exec-once`
-- 📐 **Правила окон**: `windowrulev2`
-- 🌿 **Переменные окружения**: `env`
-- 🖼 **Обои** через hyprpaper
-- 📄 **Готовый конфиг**: просмотр, копирование и свои строки
-- 👀 **Живой предпросмотр** окон прямо в программе
-- 🛟 **Безопасно**: перед изменением файлов делается резервная копия
+- 🎨 **Themes**: Catppuccin, Nord, Gruvbox, Neon and Minimal, one click each
+- 🪟 **Windows**: gaps, borders, gradient borders, rounding, layout (dwindle, master, scrolling, monocle)
+- ✨ **Effects**: opacity, blur, shadows, dimming of inactive windows
+- 🎞 **Animations**: on/off, speed, style (smooth, snappy, bouncy)
+- ⌨ **Input**: keyboard layouts and layout switching, mouse sensitivity, touchpad, three-finger workspace swipe
+- 🔑 **Keybinds**: default programs and a shortcut editor
+- 🖥 **Monitors**: resolution, refresh rate, position, scale
+- 🚀 **Autostart** programs
+- 📐 **Window rules**
+- 🌿 **Environment variables**
+- 🖼 **Wallpaper** with hyprpaper
+- 📄 **Generated config**: view, copy, add your own lines
+- 👀 **Live preview** of your windows inside the app
+- 🛟 **Safe**: a backup is made before your config is touched, and Hyprland's config errors are shown after applying
 
-## Установка
+## Supported Hyprland versions
 
-### 1. Установите Rust
+| Hyprland | Config format | Support |
+|---|---|---|
+| **0.55 and newer** | Lua (`hyprland.lua`) | ✅ |
+| **0.53 – 0.54** | hyprlang (`hyprland.conf`) | ✅ |
+| older than 0.53 | old hyprlang syntax | ❌ |
+
+The format is detected automatically: since 0.55, Hyprland loads `hyprland.lua` and only falls back to the old `hyprland.conf` when there is no Lua file, so the app writes to whichever one your Hyprland actually loads. You can also choose the format by hand on the **Themes** page.
+
+## Installation
+
+### 1. Install Rust
 
 ```bash
 # Arch Linux
 sudo pacman -S rust
-# или любой дистрибутив
+# any distribution
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-### 2. Соберите и установите
+### 2. Build and install
 
 ```bash
 git clone https://github.com/NeXtagG/easy-hyprland.git
@@ -43,23 +55,23 @@ cd easy-hyprland
 cargo install --path .
 ```
 
-Программа установится в `~/.cargo/bin/easy-hyprland`. Проверьте, что `~/.cargo/bin` есть в `PATH`.
+The binary is installed to `~/.cargo/bin/easy-hyprland`. Make sure `~/.cargo/bin` is in your `PATH`.
 
-Чтобы собрать без установки:
+To build without installing:
 
 ```bash
 cargo build --release
 ./target/release/easy-hyprland
 ```
 
-### 3. (Необязательно) Добавьте в меню приложений
+### 3. (Optional) Add it to your app launcher
 
 ```bash
 mkdir -p ~/.local/share/applications
 cat > ~/.local/share/applications/easy-hyprland.desktop <<EOF
 [Desktop Entry]
 Name=Easy Hyprland
-Comment=Настройка Hyprland
+Comment=Configure Hyprland
 Exec=$HOME/.cargo/bin/easy-hyprland
 Icon=preferences-desktop
 Type=Application
@@ -67,57 +79,68 @@ Categories=Settings;
 EOF
 ```
 
-## Использование
+## Usage
 
-1. Запустите `easy-hyprland` из терминала или из меню (wofi, rofi и т.д.).
-2. Слева выберите раздел, например «Темы» или «Окна».
-3. Меняйте настройки. Справа сразу виден предпросмотр.
-4. Нажмите **«Сохранить и применить»**, и Hyprland обновится сразу, без перезахода.
+1. Start `easy-hyprland` from a terminal or from your launcher (wofi, rofi, hyprlauncher…).
+2. Pick a section on the left, for example **Themes** or **Windows**.
+3. Change the settings. The preview on the right updates immediately.
+4. Press **Save and apply** (or **Ctrl+S**). Hyprland reloads right away, no re-login needed.
 
-Кнопки внизу:
+The language is picked from your system locale. You can change it at the bottom of the sidebar.
 
-| Кнопка | Что делает |
+| Button | What it does |
 |---|---|
-| ✔ Сохранить и применить | записывает конфиг и выполняет `hyprctl reload` |
-| 💾 Только сохранить | только записывает файлы |
-| ↩ Отменить изменения | возвращает последние сохранённые настройки |
-| ⟲ По умолчанию | сбрасывает всё к стандартным значениям |
+| ✔ Save and apply | writes the config, runs `hyprctl reload` and shows any config errors |
+| 💾 Save only | only writes the files |
+| ↩ Revert changes | goes back to the last saved settings |
+| ⟲ Defaults | resets everything to the default values |
 
-## Как это работает
+If you close the window with unsaved changes, the app asks whether to save them.
 
-- Настройки записываются в отдельный файл `~/.config/hypr/easy-hyprland.conf`.
-- В ваш `~/.config/hypr/hyprland.conf` в конец добавляется одна строка:
+## How it works
+
+- Your settings are written to a separate file:
+  - Lua: `~/.config/hypr/easy-hyprland.lua`
+  - hyprlang: `~/.config/hypr/easy-hyprland.conf`
+- One line is appended to the end of your main config (`hyprland.lua` or `hyprland.conf`):
+  ```lua
+  require("easy-hyprland")                         -- Lua
   ```
-  source = ~/.config/hypr/easy-hyprland.conf
+  ```ini
+  source = /home/you/.config/hypr/easy-hyprland.conf   # hyprlang
   ```
-  Перед этим создаётся копия `hyprland.conf.bak-<время>`. Ваш старый конфиг остаётся на месте, а настройки из программы применяются поверх него.
-- Если файла `hyprland.conf` нет, он будет создан.
-- Состояние программы хранится в `~/.config/easy-hyprland/settings.json`.
-- Если включены обои, создаётся `~/.config/hypr/hyprpaper.conf` (старый тоже сохраняется в копию).
+  Before that, a copy named `hyprland.lua.bak-<time>` (or `hyprland.conf.bak-<time>`) is created. Your existing config stays in place, and the app's settings are applied on top of it.
+- If there is no main config yet, it is created.
+- The app's own state lives in `~/.config/easy-hyprland/settings.json`.
+- With the wallpaper enabled, `~/.config/hypr/hyprpaper.conf` is written. A foreign hyprpaper config is backed up first.
+- `$XDG_CONFIG_HOME` is respected.
 
-### Как удалить
+### Uninstall
 
-Удалите строку `source = ~/.config/hypr/easy-hyprland.conf` из `hyprland.conf` и выполните:
+Remove the `require("easy-hyprland")` or `source = …easy-hyprland.conf` line from your main config, then:
 
 ```bash
 cargo uninstall easy-hyprland
-rm -r ~/.config/easy-hyprland ~/.config/hypr/easy-hyprland.conf
+rm -r ~/.config/easy-hyprland ~/.config/hypr/easy-hyprland.*
 ```
 
-## Разработка
+## Development
 
 ```bash
-cargo run      # запуск
-cargo test     # тесты
+cargo run              # start the app
+cargo test             # unit tests
+tests/validate.sh      # check generated configs against Hyprland 0.56.2 (needs lua5.4 and python3)
 ```
 
-Pull request'ы приветствуются!
+`tests/validate.sh` generates sample configs in both formats and checks every option, dispatcher and window rule effect against lists taken from the Hyprland 0.56.2 sources (`tests/hyprland-0.56.2/`). The Lua configs are executed against a strict mock of the `hl` API.
 
-## Лицензия
+Pull requests are welcome!
 
-Проект распространяется под лицензией **GNU GPL v3.0 или новее**, полный текст в файле [LICENSE](LICENSE).
+## License
 
-Простыми словами:
-- ✅ любой может **бесплатно использовать** программу, в том числе для работы;
-- ✅ можно **изменять** код и **распространять** его;
-- ❗ если вы распространяете изменённую версию, её код тоже должен быть **открытым** под той же лицензией GPL-3.0.
+This project is licensed under the **GNU GPL v3.0 or later**. The full text is in [LICENSE](LICENSE).
+
+In plain words:
+- ✅ anyone can **use** the program for free, including at work;
+- ✅ you may **change** the code and **share** it;
+- ❗ if you share a modified version, its source code must also be **open** under the same GPL-3.0 license.

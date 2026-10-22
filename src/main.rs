@@ -1,6 +1,7 @@
 mod app;
 mod config;
 mod hypr;
+mod i18n;
 mod presets;
 
 fn main() -> eframe::Result {

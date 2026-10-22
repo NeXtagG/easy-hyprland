@@ -86,6 +86,7 @@ pub const STRINGS: &[(&str, &str, &str, &str)] = &[
     ("status.backup", "копия старого файла: {}", "backup of the old file: {}", "Sicherung der alten Datei: {}"),
     ("status.save_error", "Ошибка сохранения: {}", "Save failed: {}", "Speichern fehlgeschlagen: {}"),
     ("status.load_error", "Не удалось прочитать настройки ({}), загружены значения по умолчанию", "Could not read settings ({}), defaults loaded", "Einstellungen konnten nicht gelesen werden ({}), Standardwerte geladen"),
+    ("status.manual_include", "Основной конфиг {} доступен только для чтения (его создаёт Nix/home-manager). Добавь эту строку в него через свою конфигурацию Nix и пересобери систему:", "Your main config {} is read-only (it is managed by Nix/home-manager). Add this line to it through your Nix configuration and rebuild:", "Deine Hauptkonfig {} ist schreibgeschützt (sie wird von Nix/home-manager verwaltet). Füge diese Zeile über deine Nix-Konfiguration hinzu und baue neu:"),
     ("status.reloaded", "Hyprland перезагружен", "Hyprland reloaded", "Hyprland neu geladen"),
     ("status.no_hyprctl", "hyprctl не найден: Hyprland запущен?", "hyprctl not found: is Hyprland running?", "hyprctl nicht gefunden: läuft Hyprland?"),
     ("status.config_errors", "Hyprland сообщает об ошибках в конфиге: {}", "Hyprland reports config errors: {}", "Hyprland meldet Konfigurationsfehler: {}"),

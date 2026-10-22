@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Easy Hyprland
+GenericName=Hyprland Settings
+GenericName[ru]=Настройки Hyprland
+GenericName[de]=Hyprland-Einstellungen
+Comment=Configure Hyprland with a simple GUI
+Comment[ru]=Простая настройка Hyprland
+Comment[de]=Hyprland einfach konfigurieren
+Exec=easy-hyprland
+Icon=preferences-desktop
+Terminal=false
+Categories=Settings;DesktopSettings;
+Keywords=hyprland;wayland;settings;config;

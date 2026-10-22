@@ -58,6 +58,8 @@ pub struct App {
     status: Option<(String, bool, Instant)>,
     confirm_close: bool,
     allow_close: bool,
+    /// Main config we may not edit (Nix-managed / read-only) and the line to add there.
+    manual_include: Option<(std::path::PathBuf, String)>,
 }
 
 impl App {
@@ -77,6 +79,7 @@ impl App {
             status: None,
             confirm_close: false,
             allow_close: false,
+            manual_include: None,
         };
         // Opens a given page on start (used for screenshots), e.g. EASY_HYPRLAND_PAGE=rules.
         if let Ok(page) = std::env::var("EASY_HYPRLAND_PAGE")
@@ -105,6 +108,7 @@ impl App {
             }
         };
         self.saved = self.settings.clone();
+        self.manual_include = report.manual_include.clone();
         let mut msg = l.t("status.saved").replace("{}", &report.path.display().to_string());
         for b in &report.backups {
             msg.push_str(" · ");
@@ -292,6 +296,15 @@ impl eframe::App for App {
                         self.settings.format = format;
                     }
                 });
+                if let Some((path, line)) = &self.manual_include {
+                    ui.label(RichText::new(l.t("status.manual_include").replace("{}", &path.display().to_string())).color(WARN));
+                    ui.horizontal(|ui| {
+                        ui.label(RichText::new(line).monospace().color(Color32::WHITE));
+                        if ui.button(l.t("btn.copy")).clicked() {
+                            ui.ctx().copy_text(line.clone());
+                        }
+                    });
+                }
                 let shown = match &self.status {
                     Some((text, ok, at)) if at.elapsed() < Duration::from_secs(10) => {
                         ui.label(RichText::new(text).color(if *ok { OK } else { ERR }));

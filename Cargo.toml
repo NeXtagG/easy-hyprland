@@ -1,8 +1,9 @@
 [package]
 name = "easy-hyprland"
-version = "0.1.0"
+version = "0.2.0"
+rust-version = "1.88"
 edition = "2024"
-description = "Простая и красивая настройка Hyprland с графическим интерфейсом"
+description = "Simple, good-looking GUI to configure Hyprland"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/NeXtagG/easy-hyprland"
 

@@ -1,0 +1,58 @@
+# Maintainer: NeXtagG <128530970+NeXtagG@users.noreply.github.com>
+pkgname=easy-hyprland-git
+_pkgname=easy-hyprland
+pkgver=0.2.0
+pkgrel=1
+pkgdesc="Simple, good-looking GUI to configure Hyprland"
+arch=('x86_64' 'aarch64')
+url="https://github.com/NeXtagG/easy-hyprland"
+license=('GPL-3.0-or-later')
+# egui/winit load libxkbcommon, wayland and libGL at runtime.
+depends=('gcc-libs' 'glibc' 'libxkbcommon' 'wayland' 'libglvnd')
+makedepends=('cargo' 'git')
+optdepends=(
+  'hyprland: the compositor this app configures'
+  'hyprpaper: wallpaper support'
+  'libxkbcommon-x11: running under X11/XWayland'
+)
+provides=("$_pkgname")
+conflicts=("$_pkgname")
+options=('!lto')
+source=("$_pkgname::git+$url.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$_pkgname"
+  printf "%s.r%s.%s" \
+    "$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)" \
+    "$(git rev-list --count HEAD)" \
+    "$(git rev-parse --short=7 HEAD)"
+}
+
+prepare() {
+  cd "$_pkgname"
+  export RUSTUP_TOOLCHAIN=stable
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd "$_pkgname"
+  export RUSTUP_TOOLCHAIN=stable
+  export CARGO_TARGET_DIR=target
+  # Keep build paths out of the binary (panic messages embed source paths).
+  export RUSTFLAGS="${RUSTFLAGS:-} --remap-path-prefix=$srcdir=/usr/src/debug/$_pkgname"
+  cargo build --frozen --release
+}
+
+check() {
+  cd "$_pkgname"
+  export RUSTUP_TOOLCHAIN=stable
+  cargo test --frozen
+}
+
+package() {
+  cd "$_pkgname"
+  install -Dm755 target/release/easy-hyprland "$pkgdir/usr/bin/easy-hyprland"
+  install -Dm644 packaging/easy-hyprland.desktop "$pkgdir/usr/share/applications/easy-hyprland.desktop"
+  install -Dm644 README.md README.ru.md README.de.md -t "$pkgdir/usr/share/doc/$_pkgname/"
+}

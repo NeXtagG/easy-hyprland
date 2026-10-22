@@ -101,6 +101,9 @@ pub fn generated_file_name(format: Format) -> &'static str {
 pub struct SaveReport {
     pub path: PathBuf,
     pub backups: Vec<PathBuf>,
+    /// Set when the main config can't be edited (e.g. managed by Nix/home-manager):
+    /// (main config path, line the user has to add themselves).
+    pub manual_include: Option<(PathBuf, String)>,
 }
 
 pub fn save(settings: &Settings, lang: Lang) -> io::Result<SaveReport> {
@@ -124,8 +127,20 @@ fn save_in(settings: &Settings, lang: Lang, dir: &Path, settings_file: &Path, fo
         // Absolute path so it also works with a custom $XDG_CONFIG_HOME.
         _ => (dir.join("hyprland.conf"), format!("source = {}", generated.display())),
     };
-    if let Some(b) = ensure_include(&main, generated_file_name(format), &include)? {
-        backups.push(b);
+    let mut manual_include = None;
+    if is_nix_managed(&main) {
+        if !has_include(&main, generated_file_name(format)) {
+            manual_include = Some((main.clone(), include.clone()));
+        }
+    } else {
+        match ensure_include(&main, generated_file_name(format), &include) {
+            Ok(Some(b)) => backups.push(b),
+            Ok(None) => {}
+            Err(e) if matches!(e.kind(), io::ErrorKind::PermissionDenied | io::ErrorKind::ReadOnlyFilesystem) => {
+                manual_include = Some((main.clone(), include.clone()));
+            }
+            Err(e) => return Err(e),
+        }
     }
 
     if settings.wallpaper_enabled && !settings.wallpaper.trim().is_empty() {
@@ -137,7 +152,19 @@ fn save_in(settings: &Settings, lang: Lang, dir: &Path, settings_file: &Path, fo
         fs::write(paper, settings.generate_hyprpaper(lang))?;
     }
 
-    Ok(SaveReport { path: generated, backups })
+    Ok(SaveReport { path: generated, backups, manual_include })
+}
+
+/// True when the file is a symlink into the Nix store (home-manager, NixOS modules).
+/// Such files are read-only and get replaced on the next rebuild anyway.
+fn is_nix_managed(path: &Path) -> bool {
+    fs::symlink_metadata(path).is_ok_and(|m| m.file_type().is_symlink())
+        && fs::canonicalize(path).is_ok_and(|p| p.starts_with("/nix/store"))
+}
+
+fn has_include(main: &Path, marker: &str) -> bool {
+    let marker_stem = marker.trim_end_matches(".lua").trim_end_matches(".conf");
+    fs::read_to_string(main).is_ok_and(|c| c.lines().any(|l| !is_comment(l) && l.contains(marker_stem)))
 }
 
 fn is_comment(line: &str) -> bool {
@@ -148,9 +175,8 @@ fn is_comment(line: &str) -> bool {
 /// Makes sure `main` contains an active (uncommented) line mentioning `marker`.
 /// Returns the backup path if the file had to be modified.
 fn ensure_include(main: &Path, marker: &str, include: &str) -> io::Result<Option<PathBuf>> {
-    let marker_stem = marker.trim_end_matches(".lua").trim_end_matches(".conf");
     match fs::read_to_string(main) {
-        Ok(content) if content.lines().any(|l| !is_comment(l) && l.contains(marker_stem)) => Ok(None),
+        Ok(_) if has_include(main, marker) => Ok(None),
         Ok(content) => {
             let b = backup(main)?;
             let comment = if main.extension().is_some_and(|e| e == "lua") { "--" } else { "#" };
@@ -294,6 +320,44 @@ mod tests {
         save_in(&Settings::default(), Lang::En, &d, &d.join("s.json"), Format::Hyprlang).unwrap();
         let content = fs::read_to_string(&main).unwrap();
         assert!(content.lines().any(|l| l.starts_with("source = ") && l.contains("easy-hyprland.conf")));
+        fs::remove_dir_all(d).unwrap();
+    }
+
+    #[test]
+    fn read_only_main_config_asks_for_manual_include() {
+        use std::os::unix::fs::PermissionsExt;
+        let d = tmp("readonly");
+        let main = d.join("hyprland.lua");
+        fs::write(&main, "hl.config({})\n").unwrap();
+        fs::set_permissions(&main, fs::Permissions::from_mode(0o444)).unwrap();
+        // Root ignores file permissions, so only check the outcome when the write really fails.
+        let writable = fs::OpenOptions::new().append(true).open(&main).is_ok();
+        let r = save_in(&Settings::default(), Lang::En, &d, &d.join("s.json"), Format::Lua).unwrap();
+        assert!(r.path.exists());
+        if !writable {
+            let (path, line) = r.manual_include.expect("manual include expected");
+            assert_eq!(path, main);
+            assert_eq!(line, "require(\"easy-hyprland\")");
+            assert_eq!(fs::read_to_string(&main).unwrap(), "hl.config({})\n");
+        }
+        fs::set_permissions(&main, fs::Permissions::from_mode(0o644)).unwrap();
+        fs::remove_dir_all(d).unwrap();
+    }
+
+    #[test]
+    fn nix_store_symlink_is_never_modified() {
+        // Simulates a home-manager link; the target only lives in /nix/store on NixOS.
+        let d = tmp("nixlink");
+        let target = d.join("store-hyprland.conf");
+        fs::write(&target, "general {\n}\n").unwrap();
+        std::os::unix::fs::symlink(&target, d.join("hyprland.conf")).unwrap();
+        assert!(!is_nix_managed(&d.join("hyprland.conf")));
+        assert!(!is_nix_managed(&target));
+        if let Some(store_file) = fs::read_dir("/nix/store").ok().and_then(|mut it| it.find_map(|e| e.ok()).map(|e| e.path())) {
+            let link = d.join("hm-link");
+            std::os::unix::fs::symlink(&store_file, &link).unwrap();
+            assert!(is_nix_managed(&link));
+        }
         fs::remove_dir_all(d).unwrap();
     }
 

@@ -38,46 +38,86 @@
 
 ## Установка
 
-### 1. Установи Rust
+### Arch Linux
+
+В репозитории есть `PKGBUILD`, он собирает последнюю версию из git:
 
 ```bash
-# Arch Linux
-sudo pacman -S rust
-# любой дистрибутив
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+git clone https://github.com/NeXtagG/easy-hyprland.git
+cd easy-hyprland/packaging/arch
+makepkg -si
 ```
 
-### 2. Собери и установи
+После этого программа появится в меню приложений как **Easy Hyprland**.
+
+### NixOS
+
+Попробовать без установки:
+
+```bash
+nix run github:NeXtagG/easy-hyprland
+```
+
+Установить через flakes (в `flake.nix` твоей системы):
+
+```nix
+{
+  inputs.easy-hyprland.url = "github:NeXtagG/easy-hyprland";
+
+  outputs = { nixpkgs, easy-hyprland, ... }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      modules = [
+        ({ pkgs, ... }: {
+          environment.systemPackages = [
+            easy-hyprland.packages.${pkgs.stdenv.hostPlatform.system}.default
+          ];
+        })
+      ];
+    };
+  };
+}
+```
+
+Без flakes:
+
+```bash
+nix-env -f https://github.com/NeXtagG/easy-hyprland/archive/main.tar.gz -i
+```
+
+#### Если конфиг Hyprland создаёт home-manager
+
+С home-manager файл `hyprland.lua` или `hyprland.conf` — это ссылка только для чтения в `/nix/store`. Easy Hyprland его никогда не трогает: программа пишет свой файл и показывает строку, которую нужно добавить самому. Добавь её один раз и пересобери систему:
+
+Конфиг на Lua (Hyprland 0.55+), если файл задаётся через home-manager:
+
+```nix
+xdg.configFile."hypr/hyprland.lua".text = ''
+  -- твой конфиг
+  require("easy-hyprland")
+'';
+```
+
+Конфиг hyprlang (Hyprland 0.53–0.54):
+
+```nix
+wayland.windowManager.hyprland.extraConfig = ''
+  source = ~/.config/hypr/easy-hyprland.conf
+'';
+```
+
+Дальше все изменения делаются в программе как обычно: **«Сохранить и применить»** перезаписывает только `easy-hyprland.lua` или `easy-hyprland.conf`.
+
+### Другие дистрибутивы
+
+Установи Rust (например, через [rustup](https://rustup.rs)), затем:
 
 ```bash
 git clone https://github.com/NeXtagG/easy-hyprland.git
 cd easy-hyprland
-cargo install --path .
+cargo install --locked --path .
 ```
 
-Программа установится в `~/.cargo/bin/easy-hyprland`. Проверь, что `~/.cargo/bin` есть в `PATH`.
-
-Собрать без установки:
-
-```bash
-cargo build --release
-./target/release/easy-hyprland
-```
-
-### 3. (Необязательно) Добавь в меню приложений
-
-```bash
-mkdir -p ~/.local/share/applications
-cat > ~/.local/share/applications/easy-hyprland.desktop <<EOF
-[Desktop Entry]
-Name=Easy Hyprland
-Comment=Настройка Hyprland
-Exec=$HOME/.cargo/bin/easy-hyprland
-Icon=preferences-desktop
-Type=Application
-Categories=Settings;
-EOF
-```
+Программа установится в `~/.cargo/bin/easy-hyprland`. Проверь, что `~/.cargo/bin` есть в `PATH`. Чтобы добавить её в меню приложений, скопируй `packaging/easy-hyprland.desktop` в `~/.local/share/applications/`.
 
 ## Использование
 

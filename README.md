@@ -38,46 +38,86 @@ The format is detected automatically: since 0.55, Hyprland loads `hyprland.lua` 
 
 ## Installation
 
-### 1. Install Rust
+### Arch Linux
+
+A `PKGBUILD` is included. It builds the latest version from git:
 
 ```bash
-# Arch Linux
-sudo pacman -S rust
-# any distribution
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+git clone https://github.com/NeXtagG/easy-hyprland.git
+cd easy-hyprland/packaging/arch
+makepkg -si
 ```
 
-### 2. Build and install
+The app then appears in your launcher as **Easy Hyprland**.
+
+### NixOS
+
+Try it without installing:
+
+```bash
+nix run github:NeXtagG/easy-hyprland
+```
+
+Install it with flakes (`flake.nix` of your system):
+
+```nix
+{
+  inputs.easy-hyprland.url = "github:NeXtagG/easy-hyprland";
+
+  outputs = { nixpkgs, easy-hyprland, ... }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      modules = [
+        ({ pkgs, ... }: {
+          environment.systemPackages = [
+            easy-hyprland.packages.${pkgs.stdenv.hostPlatform.system}.default
+          ];
+        })
+      ];
+    };
+  };
+}
+```
+
+Without flakes:
+
+```bash
+nix-env -f https://github.com/NeXtagG/easy-hyprland/archive/main.tar.gz -i
+```
+
+#### If your Hyprland config is managed by home-manager
+
+With home-manager, `hyprland.lua` / `hyprland.conf` is a read-only link into `/nix/store`. Easy Hyprland never touches it: it writes its own file and shows the one line you need to add yourself. Add it once and rebuild:
+
+Lua config (Hyprland 0.55+), if you manage the file through home-manager:
+
+```nix
+xdg.configFile."hypr/hyprland.lua".text = ''
+  -- your config
+  require("easy-hyprland")
+'';
+```
+
+hyprlang config (Hyprland 0.53–0.54):
+
+```nix
+wayland.windowManager.hyprland.extraConfig = ''
+  source = ~/.config/hypr/easy-hyprland.conf
+'';
+```
+
+After that, all changes are made in the app as usual: **Save and apply** rewrites only `easy-hyprland.lua` / `easy-hyprland.conf`.
+
+### Other distributions
+
+Install Rust (for example with [rustup](https://rustup.rs)), then:
 
 ```bash
 git clone https://github.com/NeXtagG/easy-hyprland.git
 cd easy-hyprland
-cargo install --path .
+cargo install --locked --path .
 ```
 
-The binary is installed to `~/.cargo/bin/easy-hyprland`. Make sure `~/.cargo/bin` is in your `PATH`.
-
-To build without installing:
-
-```bash
-cargo build --release
-./target/release/easy-hyprland
-```
-
-### 3. (Optional) Add it to your app launcher
-
-```bash
-mkdir -p ~/.local/share/applications
-cat > ~/.local/share/applications/easy-hyprland.desktop <<EOF
-[Desktop Entry]
-Name=Easy Hyprland
-Comment=Configure Hyprland
-Exec=$HOME/.cargo/bin/easy-hyprland
-Icon=preferences-desktop
-Type=Application
-Categories=Settings;
-EOF
-```
+The binary is installed to `~/.cargo/bin/easy-hyprland`. Make sure `~/.cargo/bin` is in your `PATH`. To add it to your launcher, copy `packaging/easy-hyprland.desktop` to `~/.local/share/applications/`.
 
 ## Usage
 

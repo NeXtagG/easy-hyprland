@@ -38,46 +38,86 @@ Das Format wird automatisch erkannt. Seit 0.55 lädt Hyprland `hyprland.lua` und
 
 ## Installation
 
-### 1. Rust installieren
+### Arch Linux
+
+Ein `PKGBUILD` liegt bei. Es baut die neueste Version aus git:
 
 ```bash
-# Arch Linux
-sudo pacman -S rust
-# jede Distribution
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+git clone https://github.com/NeXtagG/easy-hyprland.git
+cd easy-hyprland/packaging/arch
+makepkg -si
 ```
 
-### 2. Bauen und installieren
+Danach erscheint die App in deinem Starter als **Easy Hyprland**.
+
+### NixOS
+
+Ohne Installation ausprobieren:
+
+```bash
+nix run github:NeXtagG/easy-hyprland
+```
+
+Mit Flakes installieren (in der `flake.nix` deines Systems):
+
+```nix
+{
+  inputs.easy-hyprland.url = "github:NeXtagG/easy-hyprland";
+
+  outputs = { nixpkgs, easy-hyprland, ... }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      modules = [
+        ({ pkgs, ... }: {
+          environment.systemPackages = [
+            easy-hyprland.packages.${pkgs.stdenv.hostPlatform.system}.default
+          ];
+        })
+      ];
+    };
+  };
+}
+```
+
+Ohne Flakes:
+
+```bash
+nix-env -f https://github.com/NeXtagG/easy-hyprland/archive/main.tar.gz -i
+```
+
+#### Wenn deine Hyprland-Konfig von home-manager verwaltet wird
+
+Mit home-manager ist `hyprland.lua` bzw. `hyprland.conf` ein schreibgeschützter Link in den `/nix/store`. Easy Hyprland fasst ihn nie an: die App schreibt ihre eigene Datei und zeigt die eine Zeile, die du selbst hinzufügen musst. Füge sie einmal hinzu und baue neu:
+
+Lua-Konfig (Hyprland 0.55+), wenn die Datei über home-manager kommt:
+
+```nix
+xdg.configFile."hypr/hyprland.lua".text = ''
+  -- deine Konfig
+  require("easy-hyprland")
+'';
+```
+
+hyprlang-Konfig (Hyprland 0.53–0.54):
+
+```nix
+wayland.windowManager.hyprland.extraConfig = ''
+  source = ~/.config/hypr/easy-hyprland.conf
+'';
+```
+
+Danach änderst du alles wie gewohnt in der App: **Speichern und anwenden** schreibt nur `easy-hyprland.lua` bzw. `easy-hyprland.conf` neu.
+
+### Andere Distributionen
+
+Installiere Rust (zum Beispiel mit [rustup](https://rustup.rs)), dann:
 
 ```bash
 git clone https://github.com/NeXtagG/easy-hyprland.git
 cd easy-hyprland
-cargo install --path .
+cargo install --locked --path .
 ```
 
-Das Programm landet in `~/.cargo/bin/easy-hyprland`. Achte darauf, dass `~/.cargo/bin` in deinem `PATH` ist.
-
-Ohne Installation bauen:
-
-```bash
-cargo build --release
-./target/release/easy-hyprland
-```
-
-### 3. (Optional) Zum App-Starter hinzufügen
-
-```bash
-mkdir -p ~/.local/share/applications
-cat > ~/.local/share/applications/easy-hyprland.desktop <<EOF
-[Desktop Entry]
-Name=Easy Hyprland
-Comment=Hyprland konfigurieren
-Exec=$HOME/.cargo/bin/easy-hyprland
-Icon=preferences-desktop
-Type=Application
-Categories=Settings;
-EOF
-```
+Das Programm landet in `~/.cargo/bin/easy-hyprland`. Achte darauf, dass `~/.cargo/bin` in deinem `PATH` ist. Für den App-Starter kopiere `packaging/easy-hyprland.desktop` nach `~/.local/share/applications/`.
 
 ## Benutzung
 
